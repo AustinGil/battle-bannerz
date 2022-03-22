@@ -9,8 +9,9 @@
   },
   "dependencies": {
     "bedrocss": "^0.0.19",
+    "html-to-image": "^1.9.0",
     "vue": "^3.2.25",
-    "vuetensils": "^0.10.4"
+    "vuetensils": "^0.10.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.2.0",

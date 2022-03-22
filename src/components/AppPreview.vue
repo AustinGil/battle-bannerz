@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onUpdated, } from 'vue'
-import { AppSvg } from './index.js'
+// import { ref, onMounted, onUpdated, } from 'vue'
+// import {throttle} from '../utils/index.js'
 
 // import img from '../assets/images/sand-foreground.png'
 
@@ -9,53 +9,66 @@ const props = defineProps({
   height: Number
 })
 
-const el = ref()
-
-const paintCanvas = () => {
-  const ctx = el.value.getContext("2d");
-  const foreground = new Image();
-  foreground.src = '/img/sand-foreground.png';
-  foreground.onload = function () {
-    const offsetX = 0
-    const offsetY = props.height.value - foreground.naturalHeight
-    ctx.drawImage(foreground, offsetX, offsetY);
-  }
-  const background = new Image();
-  background.src = '/img/sand-background.png';
-  background.onload = function () {
-    const offsetX = props.width.value - background.naturalWidth - 32;
-    const offsetY = background.naturalHeight + 48;
-    ctx.drawImage(background, offsetX, offsetY);
-  }
-}
-onMounted(paintCanvas)
-onUpdated(paintCanvas)
-
+// TODO: Maybe throttle this?
+// const paintCanvas = () => {
+//   const ctx = el.value.getContext("2d");
+//   const background = new Image();
+//   background.src = '/img/background-grass-day.png';
+//   background.onload = function () {
+//     ctx.drawImage(background, 0, 0, props.width, props.height);
+//   }
+//   const foreground = new Image();
+//   foreground.src = '/img/sand-foreground.png';
+//   foreground.onload = function () {
+//     const offsetX = 0
+//     const offsetY = props.height - foreground.naturalHeight
+//     ctx.drawImage(foreground, offsetX, offsetY);
+//   }
+//   const midground = new Image();
+//   midground.src = '/img/sand-midground.png';
+//   midground.onload = function () {
+//     const offsetX = props.width - midground.naturalWidth - 32;
+//     const offsetY = midground.naturalHeight + 48;
+//     ctx.drawImage(midground, offsetX, offsetY);
+//   }
+// }
+// onMounted(paintCanvas)
+// onUpdated(paintCanvas)
 </script>
 
 <template>
-  <div>
-    <canvas ref="el" :width="props.width.value" :height="props.height.value"></canvas>
-    <div class="avatar grid place-center radius-full">
-      <AppSvg href="icon-user" ></AppSvg>
-    </div>
+  <!-- <canvas ref="el" :width="props.width" :height="props.height"></canvas> -->
+  <div
+    :style="{
+      width: `${props.width}px`,
+      height: `${props.height}px`,
+      backgroundImage: `url('/img/background-grass-day.png')` 
+    }"
+    class="battle-scene"
+  >
+    <img class="midground" src="/img/sand-midground.png" alt="">
+    <img class="foreground" src="/img/sand-foreground.png" alt="">
   </div>
 </template>
 
 <style scoped>
-img {
-  display: none;
-}
 canvas {
   border: 1px solid;
 }
-.avatar {
-  width: 8rem;
-  height: 8rem;
-  border: 2px solid;
+
+.battle-scene {
+  position: relative;
+  background-size: cover;
+}
+
+.battle-scene img {
   position: absolute;
-  transform: translate(1rem, -50%);
-  font-size: 6rem;
-  background-color: ButtonFace;
+}
+.midground {
+  top: 50%;
+  right: 1rem;
+}
+.foreground {
+  bottom: 0;
 }
 </style>
