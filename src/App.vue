@@ -1,28 +1,14 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { toJpeg } from 'html-to-image';
 import { VForm, VInput, VBtn } from 'vuetensils/src/components/index.js'
 import { AppPreview, AppSvg } from './components/index.js'
 
-const data = reactive({
-  width: 600,
-  height: 200,
-})
-
 const presets = new Map([
-  ['Small', { width: 320, height: 480 }],
-  ['Medium', { width: 640, height: 960 }],
-  ['Large', { width: 1280, height: 1920 }],
-  ['Xlarge', { width: 1920, height: 2880 }],
-  // LinkedIn
-  // 1,584x396
-  // 646x220
-  // Twitter
-  // 1,500x500
-  // YT
-  // 2,560x1,440
-  // twitch
-  // 1200 px by 480 px
+  ['Large', { width: 1500, height: 500 }],
+  ['Medium', { width: 1200, height: 480 }],
+  ['Small', { width: 900, height: 400 }],
+  ['XSmall', { width: 600, height: 300 }],
 ])
 function selectPreset(event) {
   const key = event.target.value
@@ -33,21 +19,51 @@ function selectPreset(event) {
   }
 }
 
-const previewRef = ref()
-  function generateImg() {
-    const preview = document.getElementById('preview')
-    toJpeg(preview, { quality: 0.95 })
-      .then(function (dataUrl) {
-        const link = document.createElement('a');
-        link.download = 'battle-banner.jpeg';
-        link.href = dataUrl;
-        link.click();
-      });
+const data = reactive({
+  width: 600,
+  height: 200,
+  imagePreview: null
+})
+function updateSize(event) {
+  /** @type {HTMLInputElement} */
+  const input = event.target
+  const name = input.name
+  const min = input.min
+  let value = Number(input.value)
+  if (min) {
+    value = Math.max(value, Number(min))
+  }
+  data[name] = value
+}
+const displaySize = computed(() => ({
+  width: Math.max(data.width, 600),
+  height: Math.max(data.height, 200)
+}))
+
+function onFileChange(event) {
+  const files = event.target.files;
+  if (!files.length) return;
+  // Create the image preview with a data url
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    data.imagePreview = event.target.result;
+  };
+  reader.readAsDataURL(files[0]);
+  // Add the file to state
+  // this.file = files[0];
 }
 
-
+const previewRef = ref()
 function handleSubmit(event) {
   event.preventDefault()
+  const preview = document.getElementById('preview')
+  toJpeg(preview, { quality: 0.95 })
+    .then(function (dataUrl) {
+      const link = document.createElement('a');
+      link.download = 'battle-banner.jpeg';
+      link.href = dataUrl;
+      link.click();
+    });
 }
 const log = console.log
 </script>
@@ -56,28 +72,58 @@ const log = console.log
   <main class="flex gap-8 h-full p-16">
     <VForm @valid="handleSubmit" class="w-1/4">
       <div class="mbe-16">
-        <VInput label="Width" name="width" type="number" :value="data.width" v-model="data.width" />
+        <VInput
+          label="Preset"
+          name="preset"
+          type="select"
+          :options="[...presets.keys()]"
+          @change="selectPreset"
+        />
       </div>
 
       <div class="mbe-16">
-        <VInput label="Height" name="height" type="number" :value="data.height" v-model="data.height" />
+        <VInput
+          v-model="data.width"
+          @change="updateSize($event)"
+          label="Width"
+          name="width"
+          type="number"
+          required
+          min="600"
+        />
       </div>
 
       <div class="mbe-16">
-        <select name="preset" @change="selectPreset">
-          <option v-for="[key] in presets" :key="key" :value="key">{{ key }}</option>
-        </select>
+        <VInput
+          v-model="data.height"
+          @change="updateSize($event)"
+          label="Height"
+          name="height"
+          type="number"
+          required
+          min="200"
+        />
       </div>
-      <VBtn type="submit">Submit</VBtn>
-      <VBtn @click="generateImg">Generate Banner</VBtn>
+
+      <div class="mbe-16">
+        <VInput
+          @change="onFileChange($event)"
+          label="Opponent"
+          name="opponent"
+          type="file"
+        />
+      </div>
+
+      <VBtn type="submit">Generate Banner</VBtn>
     </VForm>
 
     <div class="w-3/4">
       <AppPreview
         id="preview"
         ref="previewRef"
-        :width="data.width"
-        :height="data.height"
+        :width="displaySize.width"
+        :height="displaySize.height"
+        :opponentUrl="data.imagePreview"
       />
       <div class="avatar grid place-center radius-full">
         <AppSvg href="icon-user" ></AppSvg>

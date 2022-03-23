@@ -1,12 +1,16 @@
 <script setup>
-// import { ref, onMounted, onUpdated, } from 'vue'
+// import { computed } from 'vue'
 // import {throttle} from '../utils/index.js'
 
 // import img from '../assets/images/sand-foreground.png'
 
 const props = defineProps({
   width: Number,
-  height: Number
+  height: Number,
+  opponentUrl: {
+    type: String,
+    default: '',
+  }
 })
 
 // TODO: Maybe throttle this?
@@ -47,6 +51,7 @@ const props = defineProps({
     class="battle-scene"
   >
     <img class="midground" src="/img/sand-midground.png" alt="">
+    <img :src="props.opponentUrl" alt="opponent" class="opponent">
     <img class="foreground" src="/img/sand-foreground.png" alt="">
   </div>
 </template>
@@ -61,12 +66,18 @@ canvas {
   background-size: cover;
 }
 
-.battle-scene img {
+.battle-scene :where(.midground, .opponent, .foreground) {
   position: absolute;
 }
 .midground {
   top: 50%;
   right: 1rem;
+}
+.opponent {
+  top: calc(50% - 4rem);
+  right: 1.5rem;
+  max-width: 6rem;
+  max-height: 6rem;
 }
 .foreground {
   bottom: 0;
