@@ -8,13 +8,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "bedrocss": "^0.0.19",
+    "bedrocss": "^0.0.21",
     "html-to-image": "^1.9.0",
     "vue": "^3.2.25",
-    "vuetensils": "^0.10.6"
+    "vuetensils": "^0.10.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.2.0",
+    "eslint": "^8.11.0",
     "prtcls": "^0.0.28",
     "vite": "^2.8.0",
     "vue-demi": "^0.12.4"

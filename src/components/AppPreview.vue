@@ -1,83 +1,60 @@
 <script setup>
-// import { computed } from 'vue'
-// import {throttle} from '../utils/index.js'
-
-// import img from '../assets/images/sand-foreground.png'
+import { computed } from 'vue'
 
 const props = defineProps({
   width: Number,
   height: Number,
+  location: String,
+  timeOfDay: String,
   opponentUrl: {
     type: String,
     default: '',
   }
 })
 
-// TODO: Maybe throttle this?
-// const paintCanvas = () => {
-//   const ctx = el.value.getContext("2d");
-//   const background = new Image();
-//   background.src = '/img/background-grass-day.png';
-//   background.onload = function () {
-//     ctx.drawImage(background, 0, 0, props.width, props.height);
-//   }
-//   const foreground = new Image();
-//   foreground.src = '/img/sand-foreground.png';
-//   foreground.onload = function () {
-//     const offsetX = 0
-//     const offsetY = props.height - foreground.naturalHeight
-//     ctx.drawImage(foreground, offsetX, offsetY);
-//   }
-//   const midground = new Image();
-//   midground.src = '/img/sand-midground.png';
-//   midground.onload = function () {
-//     const offsetX = props.width - midground.naturalWidth - 32;
-//     const offsetY = midground.naturalHeight + 48;
-//     ctx.drawImage(midground, offsetX, offsetY);
-//   }
-// }
-// onMounted(paintCanvas)
-// onUpdated(paintCanvas)
+const urls = computed(() => {
+  const { location, timeOfDay } = props
+  return {
+    bg: `/img/bg-${location}-${timeOfDay}.png`,
+    mg: `/img/mg-${location}-${timeOfDay}.png`,
+    fg: `/img/fg-${location}-${timeOfDay}.png`,
+  }
+})
 </script>
 
 <template>
-  <!-- <canvas ref="el" :width="props.width" :height="props.height"></canvas> -->
   <div
     :style="{
       width: `${props.width}px`,
       height: `${props.height}px`,
-      backgroundImage: `url('/img/background-grass-day.png')` 
     }"
-    class="battle-scene"
+    class="relative"
   >
-    <img class="midground" src="/img/sand-midground.png" alt="">
-    <img :src="props.opponentUrl" alt="opponent" class="opponent">
-    <img class="foreground" src="/img/sand-foreground.png" alt="">
+    <img :src="urls.bg" alt="A super intense battle between two well-matched adversaries" class="background absolute w-full h-full">
+    <div class="opponent-wrapper grid justify-items-center absolute">
+      <img :src="props.opponentUrl" alt="" class="opponent">
+      <img :src="urls.mg" alt="" class="midground">
+    </div>
+    <img :src="urls.fg" alt="" class="foreground absolute">
   </div>
 </template>
 
 <style scoped>
-canvas {
-  border: 1px solid;
+.background {
+  object-fit: cover;
 }
-
-.battle-scene {
-  position: relative;
-  background-size: cover;
-}
-
-.battle-scene :where(.midground, .opponent, .foreground) {
-  position: absolute;
-}
-.midground {
+.opponent-wrapper {
   top: 50%;
   right: 1rem;
+  transform: translateY(-65%);
 }
 .opponent {
-  top: calc(50% - 4rem);
-  right: 1.5rem;
+  z-index: 1;
   max-width: 6rem;
   max-height: 6rem;
+}
+.midground {
+  margin-top: -1rem;
 }
 .foreground {
   bottom: 0;

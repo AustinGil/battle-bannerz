@@ -19,20 +19,49 @@ function selectPreset(event) {
   }
 }
 
+const locations = {
+  grass: 'Grass',
+  sand: 'Sand',
+  water: 'Water',
+  mountain: 'Mountain',
+  forest: 'Forest',
+  cave: 'Cave',
+}
+const times = {
+  day: 'Day',
+  afternoon: 'Afternoon',
+  night: 'Night',
+}
+const displayedLocations = Object.entries(locations).map(([key, value]) => {
+  return { value: key, label: value }
+})
+const displayedTimes = Object.entries(times).map(([key, value]) => {
+  return { value: key, label: value }
+})
+
 const data = reactive({
   width: 600,
   height: 200,
-  imagePreview: null
+  location: 'grass',
+  timeOfDay: 'day',
+  /** @type {string | ArrayBuffer} */
+  imagePreview: ''
 })
-function updateSize(event) {
+function updateData(event) {
   /** @type {HTMLInputElement} */
   const input = event.target
   const name = input.name
-  const min = input.min
-  let value = Number(input.value)
-  if (min) {
-    value = Math.max(value, Number(min))
+  const type = input.type
+  /** @type {string | number} */
+  let value = input.value
+
+  if (type === 'number') {
+    value = Number(value)
+    if (input.min) {
+      value = Math.max(value, Number(input.min))
+    }
   }
+
   data[name] = value
 }
 const displaySize = computed(() => ({
@@ -40,13 +69,21 @@ const displaySize = computed(() => ({
   height: Math.max(data.height, 200)
 }))
 
+const audioFiles = ['001', '004', '007', '054']
 function onFileChange(event) {
   const files = event.target.files;
-  if (!files.length) return;
+  if (!files.length) {
+    data.imagePreview = ''
+    return;
+  }
   // Create the image preview with a data url
   const reader = new FileReader();
   reader.onload = (event) => {
     data.imagePreview = event.target.result;
+    const randomFile = audioFiles[Math.floor(Math.random() * audioFiles.length)]
+    const audioEl = pokemonCry.value
+    audioEl.src = `/audio/${randomFile}.mp3`
+    audioEl.play()
   };
   reader.readAsDataURL(files[0]);
   // Add the file to state
@@ -54,7 +91,9 @@ function onFileChange(event) {
 }
 
 const previewRef = ref()
+const pokeCenter = ref()
 function handleSubmit(event) {
+  pokeCenter.value.play()
   event.preventDefault()
   const preview = document.getElementById('preview')
   toJpeg(preview, { quality: 0.95 })
@@ -65,70 +104,99 @@ function handleSubmit(event) {
       link.click();
     });
 }
+
+const pokemonCry = ref()
 const log = console.log
 </script>
 
 <template>
-  <main class="flex gap-8 h-full p-16">
-    <VForm @valid="handleSubmit" class="w-1/4">
-      <div class="mbe-16">
+  <main class="h-full p-16">
+    <h1>Battle Bannerz</h1>
+    <p>A Pokémon battle scene generator for social media banners!</p>
+    <div class="flex gap-8 h-full">
+      <VForm @valid="handleSubmit" class="w-1/4">
         <VInput
           label="Preset"
           name="preset"
           type="select"
           :options="[...presets.keys()]"
           @change="selectPreset"
+          class="mbe-16"
         />
-      </div>
-
-      <div class="mbe-16">
+  
         <VInput
           v-model="data.width"
-          @change="updateSize($event)"
+          @change="updateData($event)"
           label="Width"
           name="width"
           type="number"
           required
           min="600"
+          class="mbe-16"
         />
-      </div>
-
-      <div class="mbe-16">
+  
         <VInput
           v-model="data.height"
-          @change="updateSize($event)"
+          @change="updateData($event)"
           label="Height"
           name="height"
           type="number"
           required
           min="200"
+          class="mbe-16"
         />
-      </div>
-
-      <div class="mbe-16">
+        
+        <VInput
+          v-model="data.location"
+          label="Location"
+          name="location"
+          type="select"
+          :options="displayedLocations"
+          @change="updateData($event)"
+          class="mbe-16"
+        />
+  
+        <VInput
+          v-model="data.timeOfDay"
+          label="Time of Day"
+          name="timeOfDay"
+          type="select"
+          :options="displayedTimes"
+          @change="updateData($event)"
+          class="mbe-16"
+        />
+  
         <VInput
           @change="onFileChange($event)"
           label="Opponent"
           name="opponent"
           type="file"
+          class="mbe-16"
         />
-      </div>
-
-      <VBtn type="submit">Generate Banner</VBtn>
-    </VForm>
-
-    <div class="w-3/4">
-      <AppPreview
-        id="preview"
-        ref="previewRef"
-        :width="displaySize.width"
-        :height="displaySize.height"
-        :opponentUrl="data.imagePreview"
-      />
-      <div class="avatar grid place-center radius-full">
-        <AppSvg href="icon-user" ></AppSvg>
+  
+        <VBtn type="submit">Generate Banner</VBtn>
+      </VForm>
+      <audio ref="pokeCenter" src="/audio/pokecenter.mp3" preload="metadata" type="audio/mpeg"></audio>
+  
+      <div class="w-3/4">
+        <AppPreview
+          id="preview"
+          ref="previewRef"
+          :width="displaySize.width"
+          :height="displaySize.height"
+          :location="data.location"
+          :timeOfDay="data.timeOfDay"
+          :opponentUrl="data.imagePreview"
+        />
+  
+        <audio ref="pokemonCry" preload="metadata" type="audio/mpeg"></audio>
+  
+        <div class="avatar grid place-center radius-full">
+          <AppSvg href="icon-user" ></AppSvg>
+        </div>
       </div>
     </div>
+    <!-- <audio src="/audio/battle.mp3" autoplay preload="metadata" type="audio/mpeg"></audio> -->
   </main>
 </template>
 
