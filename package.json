@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/vt323": "^4.5.6",
     "bedrocss": "^0.0.21",
     "html-to-image": "^1.9.0",
     "vue": "^3.2.25",

@@ -1,7 +1,8 @@
 <script setup>
-import { reactive, computed, ref } from 'vue'
+import { reactive, computed, ref, onMounted } from 'vue'
 import { toJpeg } from 'html-to-image';
 import { VForm, VInput, VBtn } from 'vuetensils/src/components/index.js'
+import pokemonData from './data/pokemon.json'
 import { AppPreview, AppSvg } from './components/index.js'
 
 const presets = new Map([
@@ -39,13 +40,18 @@ const displayedTimes = Object.entries(times).map(([key, value]) => {
   return { value: key, label: value }
 })
 
+const randomPokemonNumber = Math.floor(Math.random() * 151) + 1
+const randomPokemon = Object.values(pokemonData).find(pokemon => pokemon.num === randomPokemonNumber)
 const data = reactive({
   width: 600,
   height: 200,
   location: 'grass',
   timeOfDay: 'day',
+
+  // Opponent
+  opponentName: randomPokemon.name,
   /** @type {string | ArrayBuffer} */
-  imagePreview: ''
+  opponentUrl: `/img/pokemon/${randomPokemon.num}.png`,
 })
 function updateData(event) {
   /** @type {HTMLInputElement} */
@@ -69,20 +75,19 @@ const displaySize = computed(() => ({
   height: Math.max(data.height, 200)
 }))
 
-const audioFiles = ['001', '004', '007', '054']
 function onFileChange(event) {
   const files = event.target.files;
   if (!files.length) {
-    data.imagePreview = ''
+    data.opponentUrl = ''
     return;
   }
   // Create the image preview with a data url
   const reader = new FileReader();
   reader.onload = (event) => {
-    data.imagePreview = event.target.result;
-    const randomFile = audioFiles[Math.floor(Math.random() * audioFiles.length)]
-    const audioEl = pokemonCry.value
-    audioEl.src = `/audio/${randomFile}.mp3`
+    data.opponentUrl = event.target.result;
+    const randomFile = Math.floor(Math.random() * 151) + 1
+    const audioEl = new Audio()
+    audioEl.src = `/audio/cries/${randomFile}.ogg`
     audioEl.play()
   };
   reader.readAsDataURL(files[0]);
@@ -104,8 +109,6 @@ function handleSubmit(event) {
       link.click();
     });
 }
-
-const pokemonCry = ref()
 const log = console.log
 </script>
 
@@ -166,13 +169,23 @@ const log = console.log
           class="mbe-16"
         />
   
-        <VInput
-          @change="onFileChange($event)"
-          label="Opponent"
-          name="opponent"
-          type="file"
-          class="mbe-16"
-        />
+        <fieldset>
+          <legend>Opponent</legend>
+          <VInput
+            v-model="data.opponentName"
+            label="Name"
+            name="opponentName"
+            class="mbe-16"
+          />
+
+          <VInput
+            @change="onFileChange($event)"
+            label="Sprite"
+            name="sprite"
+            type="file"
+            class="mbe-16"
+          />
+        </fieldset>
   
         <VBtn type="submit">Generate Banner</VBtn>
       </VForm>
@@ -186,14 +199,15 @@ const log = console.log
           :height="displaySize.height"
           :location="data.location"
           :timeOfDay="data.timeOfDay"
-          :opponentUrl="data.imagePreview"
+          :opponentName="data.opponentName"
+          :opponentUrl="data.opponentUrl"
         />
-  
-        <audio ref="pokemonCry" preload="metadata" type="audio/mpeg"></audio>
-  
-        <div class="avatar grid place-center radius-full">
-          <AppSvg href="icon-user" ></AppSvg>
+        <div class="dialog">
+          <p>Dialog</p>
         </div>
+        <!-- <div class="avatar grid place-center radius-full">
+          <AppSvg href="icon-user" ></AppSvg>
+        </div> -->
       </div>
     </div>
     <!-- <audio src="/audio/battle.mp3" autoplay preload="metadata" type="audio/mpeg"></audio> -->
@@ -201,6 +215,11 @@ const log = console.log
 </template>
 
 <style>
+.dialog {
+  border: 4px double;
+  border-radius: 4px;
+  padding: 4px;
+}
 .avatar {
   width: 8rem;
   height: 8rem;

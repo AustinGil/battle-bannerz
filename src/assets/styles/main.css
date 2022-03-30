@@ -2,6 +2,8 @@ html,
 body,
 #app {
   height: 100%;
+  font-size: 1.2rem;
+  font-family: "VT323";
 }
 .grid {
   display: grid;
@@ -21,6 +23,9 @@ body,
 .gap-8 {
   gap: .5rem;
 }
+.align-center {
+  align-items: center;
+}
 .relative {
   position: relative;
 }
@@ -32,6 +37,9 @@ body,
 }
 .w-1\/4 {
   width: 25%;
+}
+.w-1\/2 {
+  width: 50%;
 }
 .w-3\/4 {
   width: 75%;
@@ -45,6 +53,21 @@ body,
 .radius-full {
   border-radius: 1e9px;
 }
+.p-8 {
+  padding: .5rem;
+}
 .p-16 {
   padding: 1rem;
+}
+.color-black {
+  color: #000;
+}
+.color-yellow {
+  color: gold;
+}
+.bg-white {
+  background-color: #fff;
+}
+.bg-black {
+  background-color: #000;
 }
