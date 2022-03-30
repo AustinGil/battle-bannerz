@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, ref, onMounted } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { toJpeg } from 'html-to-image';
 import { VForm, VInput, VBtn } from 'vuetensils/src/components/index.js'
 import pokemonData from './data/pokemon.json'
@@ -40,18 +40,33 @@ const displayedTimes = Object.entries(times).map(([key, value]) => {
   return { value: key, label: value }
 })
 
-const randomPokemonNumber = Math.floor(Math.random() * 151) + 1
-const randomPokemon = Object.values(pokemonData).find(pokemon => pokemon.num === randomPokemonNumber)
+const pokemonList = [] 
+for (const pokemonKey in pokemonData) {
+  if (!Object.hasOwnProperty.call(pokemonData, pokemonKey)) continue
+  
+  const pokemon = pokemonData[pokemonKey]
+  if (pokemon.num === pokemonList.length) continue
+
+  pokemonList.push(pokemon)
+}
+pokemonList.length = 300
+const randomPokemonIndex = Math.floor(Math.random() * pokemonList.length) + 1
+const randomPokemon = pokemonList[randomPokemonIndex]
+
 const data = reactive({
+  // Scene
   width: 600,
   height: 200,
   location: 'grass',
   timeOfDay: 'day',
-
   // Opponent
   opponentName: randomPokemon.name,
   /** @type {string | ArrayBuffer} */
   opponentUrl: `/img/pokemon/${randomPokemon.num}.png`,
+  opponentHealth: 100,
+  // Trainer
+  customText: false,
+  trainerText: `A wild ${randomPokemon.name.toUpperCase()} appeared!`,
 })
 function updateData(event) {
   /** @type {HTMLInputElement} */
@@ -75,30 +90,49 @@ const displaySize = computed(() => ({
   height: Math.max(data.height, 200)
 }))
 
+function setOpponent(event) {
+  const select = event.target
+  const pokemonNum = Number(select.value)
+  const pokemon = pokemonList[pokemonNum - 1]
+  const audioEl = new Audio()
+  audioEl.src = `/audio/cries/${pokemon.num}.ogg`
+  audioEl.play()
+  data.opponentName = pokemon.name
+  data.opponentUrl = `/img/pokemon/${pokemon.num}.png`
+  if (!data.customText) {
+    data.trainerText = `A wild ${pokemon.name.toUpperCase()} appeared!`
+  }
+}
 function onFileChange(event) {
   const files = event.target.files;
   if (!files.length) {
     data.opponentUrl = ''
     return;
   }
+  const file = files[0]
+  let name = file.name
+  name = name.slice(0, name.lastIndexOf('.'))
   // Create the image preview with a data url
   const reader = new FileReader();
   reader.onload = (event) => {
     data.opponentUrl = event.target.result;
-    const randomFile = Math.floor(Math.random() * 151) + 1
+    data.opponentName = name
+    const randomFile = Math.floor(Math.random() * pokemonList.length) + 1
     const audioEl = new Audio()
     audioEl.src = `/audio/cries/${randomFile}.ogg`
     audioEl.play()
+    if (!data.customText) {
+      data.trainerText = `A wild ${name.toUpperCase()} appeared!`
+    }
   };
-  reader.readAsDataURL(files[0]);
-  // Add the file to state
-  // this.file = files[0];
+  reader.readAsDataURL(file);
 }
 
 const previewRef = ref()
-const pokeCenter = ref()
+const pokeCenter = new Audio()
+pokeCenter.src = '/audio/pokecenter.mp3'
 function handleSubmit(event) {
-  pokeCenter.value.play()
+  pokeCenter.play()
   event.preventDefault()
   const preview = document.getElementById('preview')
   toJpeg(preview, { quality: 0.95 })
@@ -118,59 +152,85 @@ const log = console.log
     <p>A Pokémon battle scene generator for social media banners!</p>
     <div class="flex gap-8 h-full">
       <VForm @valid="handleSubmit" class="w-1/4">
-        <VInput
-          label="Preset"
-          name="preset"
-          type="select"
-          :options="[...presets.keys()]"
-          @change="selectPreset"
-          class="mbe-16"
-        />
-  
-        <VInput
-          v-model="data.width"
-          @change="updateData($event)"
-          label="Width"
-          name="width"
-          type="number"
-          required
-          min="600"
-          class="mbe-16"
-        />
-  
-        <VInput
-          v-model="data.height"
-          @change="updateData($event)"
-          label="Height"
-          name="height"
-          type="number"
-          required
-          min="200"
-          class="mbe-16"
-        />
-        
-        <VInput
-          v-model="data.location"
-          label="Location"
-          name="location"
-          type="select"
-          :options="displayedLocations"
-          @change="updateData($event)"
-          class="mbe-16"
-        />
-  
-        <VInput
-          v-model="data.timeOfDay"
-          label="Time of Day"
-          name="timeOfDay"
-          type="select"
-          :options="displayedTimes"
-          @change="updateData($event)"
-          class="mbe-16"
-        />
+        <fieldset class="mbe-16">
+          <legend>Scene</legend>
+          <VInput
+            label="Preset"
+            name="preset"
+            type="select"
+            :options="[...presets.keys()]"
+            @change="selectPreset"
+            class="mbe-16"
+          />
+    
+          <VInput
+            v-model="data.width"
+            @change="updateData($event)"
+            label="Width"
+            name="width"
+            type="number"
+            required
+            min="600"
+            class="mbe-16"
+          />
+    
+          <VInput
+            v-model="data.height"
+            @change="updateData($event)"
+            label="Height"
+            name="height"
+            type="number"
+            required
+            min="200"
+            class="mbe-16"
+          />
+          
+          <VInput
+            v-model="data.location"
+            label="Location"
+            name="location"
+            type="select"
+            :options="displayedLocations"
+            @change="updateData($event)"
+            class="mbe-16"
+          />
+    
+          <VInput
+            v-model="data.timeOfDay"
+            label="Time of Day"
+            name="timeOfDay"
+            type="select"
+            :options="displayedTimes"
+            @change="updateData($event)"
+            class="mbe-16"
+          />
+        </fieldset>
   
         <fieldset>
           <legend>Opponent</legend>
+          <VInput
+            label="Pokemon"
+            name="opponent-preset"
+            type="select"
+            :options="pokemonList.map(poke => {
+              return {
+                value: poke.num,
+                label: poke.name,
+              }
+            })"
+            :value="randomPokemon.num"
+            @change="setOpponent($event)"
+            class="mbe-16"
+          />
+
+          <VInput
+            label="Sprite"
+            name="sprite"
+            type="file"
+            @change="onFileChange($event)"
+            class="mbe-16"
+          />
+
           <VInput
             v-model="data.opponentName"
             label="Name"
@@ -179,35 +239,39 @@ const log = console.log
           />
 
           <VInput
-            @change="onFileChange($event)"
-            label="Sprite"
-            name="sprite"
-            type="file"
+            v-model="data.opponentHealth"
+            label="Health"
+            name="opponentHealth"
+            type="range"
             class="mbe-16"
           />
         </fieldset>
   
+        <fieldset>
+          <legend>Trainer</legend>
+          <VInput
+            v-model="data.trainerText"
+            label="Text"
+            type="textarea"
+            name="trainerText"
+            class="mbe-16"
+            @change="data.customText = true"
+          />
+        </fieldset>
         <VBtn type="submit">Generate Banner</VBtn>
       </VForm>
-      <audio ref="pokeCenter" src="/audio/pokecenter.mp3" preload="metadata" type="audio/mpeg"></audio>
   
       <div class="w-3/4">
         <AppPreview
           id="preview"
           ref="previewRef"
+          v-bind="data"
           :width="displaySize.width"
           :height="displaySize.height"
-          :location="data.location"
-          :timeOfDay="data.timeOfDay"
-          :opponentName="data.opponentName"
-          :opponentUrl="data.opponentUrl"
         />
-        <div class="dialog">
-          <p>Dialog</p>
-        </div>
-        <!-- <div class="avatar grid place-center radius-full">
+        <div class="avatar grid place-center radius-full">
           <AppSvg href="icon-user" ></AppSvg>
-        </div> -->
+        </div>
       </div>
     </div>
     <!-- <audio src="/audio/battle.mp3" autoplay preload="metadata" type="audio/mpeg"></audio> -->
@@ -215,11 +279,6 @@ const log = console.log
 </template>
 
 <style>
-.dialog {
-  border: 4px double;
-  border-radius: 4px;
-  padding: 4px;
-}
 .avatar {
   width: 8rem;
   height: 8rem;

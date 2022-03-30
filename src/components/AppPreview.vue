@@ -2,10 +2,12 @@
 import { computed } from 'vue'
 
 const props = defineProps({
+  // Scene
   width: Number,
   height: Number,
   location: String,
   timeOfDay: String,
+  // Opponent
   opponentName: {
     type: String,
     default: '',
@@ -13,7 +15,16 @@ const props = defineProps({
   opponentUrl: {
     type: String,
     default: '',
-  }
+  },
+  opponentHealth: {
+    type: Number,
+    default: 100,
+  },
+  // Trainer
+  trainerText: {
+    type: String,
+    default: 'A wild Pokémon appeared!',
+  },
 })
 
 const urls = computed(() => {
@@ -23,6 +34,12 @@ const urls = computed(() => {
     mg: `/img/mg-${location}-${timeOfDay}.png`,
     fg: `/img/fg-${location}-${timeOfDay}.png`,
   }
+})
+const healthBarColor = computed(() => {
+  const { opponentHealth } = props
+  if (opponentHealth < 25) return 'firebrick'
+  if (opponentHealth < 50) return 'gold'
+  return 'limegreen'
 })
 </script>
 
@@ -40,7 +57,14 @@ const urls = computed(() => {
       {{ opponentName.toUpperCase() }}
       <div class="health-bar health-bar--opponent flex align-center">
         <span class="color-yellow bg-black">HP: </span>
-        <progress value="100" min="0" max="100"></progress>
+        <!-- <progress value="100" min="0" max="100"></progress> -->
+        <div
+          :style="{
+            '--health': `${opponentHealth}%`,
+            '--health-bar-color': healthBarColor
+          }"
+          class="health-bar__bar"
+        ></div>
       </div>
     </div>
 
@@ -49,6 +73,11 @@ const urls = computed(() => {
       <img :src="urls.mg" alt="" class="midground">
     </div>
     <img :src="urls.fg" alt="" class="foreground absolute">
+
+    
+    <div class="dialog absolute w-1/2 color-black bg-white">
+      <p>{{ trainerText }}</p>
+    </div>
   </div>
 </template>
 
@@ -61,8 +90,6 @@ const urls = computed(() => {
   border-style: solid;
 }
 .status--opponent {
-  top: 1rem;
-  left: 1rem;
   border-width: 0 0 .125rem .25rem;
 }
 .status--opponent:after {
@@ -85,19 +112,20 @@ const urls = computed(() => {
   border-right-width: .5rem;
 }
 
-progress[value] {
-  border: 0;
-  appearance: none;
+.health-bar__bar {
+  --health: 100%;
+  --health-bar-color: limegreen;
+  width: 100%;
+}
+.health-bar__bar::before {
+  content: '';
+  display: block;
   height: .5rem;
-}
-progress[value]::-webkit-progress-value {
-  background: limegreen;
-}
-progress[value]::-moz-progress-bar { 
-  background: limegreen;
+  width: var(--health);
+  background: var(--health-bar-color);
 }
 .opponent-wrapper {
-  top: 50%;
+  top: 45%;
   right: 1rem;
   transform: translateY(-65%);
 }
@@ -111,5 +139,13 @@ progress[value]::-moz-progress-bar {
 }
 .foreground {
   bottom: 0;
+}
+
+.dialog {
+  border: 4px double;
+  border-radius: 4px;
+  padding: 4px;
+  bottom: 0;
+  right: 0;
 }
 </style>
