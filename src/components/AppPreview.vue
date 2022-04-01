@@ -21,6 +21,18 @@ const props = defineProps({
     default: 100,
   },
   // Trainer
+  trainerBox: {
+    type: String,
+    default: 'status',
+  },
+  trainerName: {
+    type: String,
+    default: '',
+  },
+  trainerHealth: {
+    type: Number,
+    default: 100,
+  },
   trainerText: {
     type: String,
     default: 'A wild Pokémon appeared!',
@@ -32,15 +44,14 @@ const urls = computed(() => {
   return {
     bg: `/img/bg-${location}-${timeOfDay}.png`,
     mg: `/img/mg-${location}-${timeOfDay}.png`,
-    fg: `/img/fg-${location}-${timeOfDay}.png`,
+    fg: `/img/mg-${location}-${timeOfDay}.png`,
   }
 })
-const healthBarColor = computed(() => {
-  const { opponentHealth } = props
-  if (opponentHealth < 25) return 'firebrick'
-  if (opponentHealth < 50) return 'gold'
+const getHealthBarColor = (value) => {
+  if (value < 25) return 'firebrick'
+  if (value < 50) return 'gold'
   return 'limegreen'
-})
+}
 </script>
 
 <template>
@@ -49,19 +60,19 @@ const healthBarColor = computed(() => {
       width: `${props.width}px`,
       height: `${props.height}px`,
     }"
-    class="relative"
+    class="relative overflow-hidden"
   >
     <img :src="urls.bg" alt="A super intense battle between two well-matched adversaries" class="background absolute w-full h-full">
 
-    <div class="status status--opponent absolute w-1/2 p-8 color-black bg-white after:absolute">
-      {{ opponentName.toUpperCase() }}
+    <div class="status status--opponent absolute w-1/2 p-8 color-black bg-white">
+      {{ props.opponentName.toUpperCase() }}
       <div class="health-bar health-bar--opponent flex align-center">
         <span class="color-yellow bg-black">HP: </span>
         <!-- <progress value="100" min="0" max="100"></progress> -->
         <div
           :style="{
-            '--health': `${opponentHealth}%`,
-            '--health-bar-color': healthBarColor
+            '--health': `${props.opponentHealth}%`,
+            '--health-bar-color': getHealthBarColor(props.opponentHealth)
           }"
           class="health-bar__bar"
         ></div>
@@ -74,8 +85,21 @@ const healthBarColor = computed(() => {
     </div>
     <img :src="urls.fg" alt="" class="foreground absolute">
 
-    
-    <div class="dialog absolute w-1/2 color-black bg-white">
+    <div v-if="trainerBox === 'status'" class="status status--trainer absolute w-1/2 p-8 color-black bg-white">
+      {{ trainerName.toUpperCase() }}
+      <div class="health-bar health-bar--opponent flex align-center">
+        <span class="color-yellow bg-black">HP: </span>
+        <!-- <progress value="100" min="0" max="100"></progress> -->
+        <div
+          :style="{
+            '--health': `${props.trainerHealth}%`,
+            '--health-bar-color': getHealthBarColor(props.trainerHealth)
+          }"
+          class="health-bar__bar"
+        ></div>
+      </div>
+    </div>
+    <div v-else class="dialog absolute w-1/2 color-black bg-white">
       <p>{{ trainerText }}</p>
     </div>
   </div>
@@ -89,20 +113,33 @@ const healthBarColor = computed(() => {
 .status {
   border-style: solid;
 }
-.status--opponent {
-  border-width: 0 0 .125rem .25rem;
-}
-.status--opponent:after {
+.status:after {
   content: "";
   position: absolute;
-  right: 0;
   bottom: -.125rem;
-  transform: translateX(100%);
   width: 0;
   height: 0;
   border-style: solid;
+}
+.status--opponent {
+  top: .125rem;
+  left: .125rem;
+  border-width: 0 0 .125rem .25rem;
+}
+.status--opponent:after {
+  right: 0;
+  transform: translateX(100%);
   border-width: .5rem 0 0 1rem;
   border-color: transparent transparent transparent currentColor;
+}
+.status--trainer {
+  border-width: 0 .25rem .125rem 0;
+}
+.status--trainer:after {
+  left: 0;
+  transform: translateX(-100%);
+  border-width: 0 0 .5rem 1rem;
+  border-color: transparent transparent currentColor transparent;
 }
 .health-bar {
   border: .125rem solid;
@@ -139,13 +176,16 @@ const healthBarColor = computed(() => {
 }
 .foreground {
   bottom: 0;
+  transform: scale(2.5) translateY(25%);
 }
-
+.status--trainer,
+.dialog {
+  bottom: .125rem;
+  right: .125rem;
+}
 .dialog {
   border: 4px double;
   border-radius: 4px;
   padding: 4px;
-  bottom: 0;
-  right: 0;
 }
 </style>

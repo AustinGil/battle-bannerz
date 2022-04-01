@@ -1,7 +1,7 @@
 <script setup>
-import { reactive, computed, ref } from 'vue'
+import { reactive, computed, ref, watch } from 'vue'
 import { toJpeg } from 'html-to-image';
-import { VForm, VInput, VBtn } from 'vuetensils/src/components/index.js'
+import { VTabs, VForm, VInput, VBtn } from 'vuetensils/src/components/index.js'
 import pokemonData from './data/pokemon.json'
 import { AppPreview, AppSvg } from './components/index.js'
 
@@ -53,18 +53,24 @@ pokemonList.length = 300
 const randomPokemonIndex = Math.floor(Math.random() * pokemonList.length) + 1
 const randomPokemon = pokemonList[randomPokemonIndex]
 
+const currentQuery = new URLSearchParams(window.location.search)
+
 const data = reactive({
   // Scene
   width: 600,
   height: 200,
-  location: 'grass',
-  timeOfDay: 'day',
+  location: currentQuery.get('location') || 'grass',
+  timeOfDay: currentQuery.get('timeOfDay') || 'day',
   // Opponent
   opponentName: randomPokemon.name,
   /** @type {string | ArrayBuffer} */
   opponentUrl: `/img/pokemon/${randomPokemon.num}.png`,
   opponentHealth: 100,
   // Trainer
+  /** @type {'status'|'text'} */
+  trainerBox: 'status',
+  trainerName: '',
+  trainerHealth: 100,
   customText: false,
   trainerText: `A wild ${randomPokemon.name.toUpperCase()} appeared!`,
 })
@@ -143,6 +149,17 @@ function handleSubmit(event) {
       link.click();
     });
 }
+
+watch(
+  [() => data.location, () => data.timeOfDay], 
+  ([newLocation, newTimeOfDay]) => {
+    const queryParams = new URLSearchParams({
+      location: newLocation,
+      timeOfDay: newTimeOfDay,
+    })
+    window.history.replaceState({}, '', `?${queryParams}`)
+  },
+)
 const log = console.log
 </script>
 
@@ -152,112 +169,151 @@ const log = console.log
     <p>A Pokémon battle scene generator for social media banners!</p>
     <div class="flex gap-8 h-full">
       <VForm @valid="handleSubmit" class="w-1/4">
-        <fieldset class="mbe-16">
-          <legend>Scene</legend>
-          <VInput
-            label="Preset"
-            name="preset"
-            type="select"
-            :options="[...presets.keys()]"
-            @change="selectPreset"
-            class="mbe-16"
-          />
-    
-          <VInput
-            v-model="data.width"
-            @change="updateData($event)"
-            label="Width"
-            name="width"
-            type="number"
-            required
-            min="600"
-            class="mbe-16"
-          />
-    
-          <VInput
-            v-model="data.height"
-            @change="updateData($event)"
-            label="Height"
-            name="height"
-            type="number"
-            required
-            min="200"
-            class="mbe-16"
-          />
+        <VTabs>
+          <template #tab-scene>Scene</template>
+          <template #panel-scene>
+            <fieldset class="mbe-16">
+              <legend>Scene</legend>
+              <VInput
+                label="Preset"
+                name="preset"
+                type="select"
+                :options="[...presets.keys()]"
+                @change="selectPreset"
+                class="mbe-16"
+              />
+        
+              <VInput
+                v-model="data.width"
+                @change="updateData($event)"
+                label="Width"
+                name="width"
+                type="number"
+                required
+                min="600"
+                class="mbe-16"
+              />
+        
+              <VInput
+                v-model="data.height"
+                @change="updateData($event)"
+                label="Height"
+                name="height"
+                type="number"
+                required
+                min="200"
+                class="mbe-16"
+              />
+              
+              <VInput
+                v-model="data.location"
+                label="Location"
+                name="location"
+                type="select"
+                :options="displayedLocations"
+                @change="updateData($event)"
+                class="mbe-16"
+              />
+        
+              <VInput
+                v-model="data.timeOfDay"
+                label="Time of Day"
+                name="timeOfDay"
+                type="select"
+                :options="displayedTimes"
+                @change="updateData($event)"
+                class="mbe-16"
+              />
+            </fieldset>
+          </template>
           
-          <VInput
-            v-model="data.location"
-            label="Location"
-            name="location"
-            type="select"
-            :options="displayedLocations"
-            @change="updateData($event)"
-            class="mbe-16"
-          />
-    
-          <VInput
-            v-model="data.timeOfDay"
-            label="Time of Day"
-            name="timeOfDay"
-            type="select"
-            :options="displayedTimes"
-            @change="updateData($event)"
-            class="mbe-16"
-          />
-        </fieldset>
-  
-        <fieldset>
-          <legend>Opponent</legend>
-          <VInput
-            label="Pokemon"
-            name="opponent-preset"
-            type="select"
-            :options="pokemonList.map(poke => {
-              return {
-                value: poke.num,
-                label: poke.name,
-              }
-            })"
-            :value="randomPokemon.num"
-            @change="setOpponent($event)"
-            class="mbe-16"
-          />
+          <template #tab-opponent>Opponent</template>
+          <template #panel-opponent>
+            <fieldset>
+              <legend>Opponent</legend>
+              <VInput
+                label="Pokemon"
+                name="opponent-preset"
+                type="select"
+                :options="pokemonList.map(poke => {
+                  return {
+                    value: poke.num,
+                    label: poke.name,
+                  }
+                })"
+                :value="randomPokemon.num"
+                @change="setOpponent($event)"
+                class="mbe-16"
+              />
 
-          <VInput
-            label="Sprite"
-            name="sprite"
-            type="file"
-            @change="onFileChange($event)"
-            class="mbe-16"
-          />
+              <VInput
+                label="Sprite"
+                name="sprite"
+                type="file"
+                @change="onFileChange($event)"
+                class="mbe-16"
+              />
 
-          <VInput
-            v-model="data.opponentName"
-            label="Name"
-            name="opponentName"
-            class="mbe-16"
-          />
+              <VInput
+                v-model="data.opponentName"
+                label="Name"
+                name="opponentName"
+                class="mbe-16"
+              />
 
-          <VInput
-            v-model="data.opponentHealth"
-            label="Health"
-            name="opponentHealth"
-            type="range"
-            class="mbe-16"
-          />
-        </fieldset>
-  
-        <fieldset>
-          <legend>Trainer</legend>
-          <VInput
-            v-model="data.trainerText"
-            label="Text"
-            type="textarea"
-            name="trainerText"
-            class="mbe-16"
-            @change="data.customText = true"
-          />
-        </fieldset>
+              <VInput
+                v-model="data.opponentHealth"
+                label="Health"
+                name="opponentHealth"
+                type="range"
+                class="mbe-16"
+              />
+            </fieldset>
+          </template>
+
+          <template #tab-trainer>Trainer</template>
+          <template #panel-trainer>
+            <fieldset>
+              <legend>Trainer</legend>
+              <VInput
+                :value="data.trainerBox"
+                label="Box Type"
+                name="trainerBox"
+                type="radio"
+                :options="[{ label: 'Status', value: 'status' }, { label: 'Text', value: 'text' }]"
+                @change="data.trainerBox = $event.target.value"
+                class="mbe-16"
+              />
+
+              <template v-if="data.trainerBox === 'status'">
+                <VInput
+                  v-model="data.trainerName"
+                  label="Name"
+                  name="trainerName"
+                  class="mbe-16"
+                />
+                <VInput
+                  v-model="data.trainerHealth"
+                  label="Health"
+                  name="trainerHealth"
+                  type="range"
+                  class="mbe-16"
+                />
+              </template>
+
+              <template v-else>
+                <VInput
+                  v-model="data.trainerText"
+                  label="Text"
+                  type="textarea"
+                  name="trainerText"
+                  class="mbe-16"
+                  @change="data.customText = true"
+                />
+              </template>
+            </fieldset>
+          </template>
+        </VTabs>
         <VBtn type="submit">Generate Banner</VBtn>
       </VForm>
   
@@ -287,5 +343,11 @@ const log = console.log
   transform: translate(1rem, -50%);
   font-size: 6rem;
   background-color: ButtonFace;
+}
+.vts-input--radio label {
+  display: block;
+}
+.vts-input--radio input {
+  margin-inline-end: .5rem;
 }
 </style>
