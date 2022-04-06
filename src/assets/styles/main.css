@@ -11,11 +11,11 @@ body,
 .place-center {
   place-content: center;
 }
-.grid {
-  display: grid;
-}
 .justify-items-center {
   justify-items: center;
+}
+.columns-3 {
+  grid-template-columns: repeat(3, 1fr);
 }
 .flex {
   display: flex;

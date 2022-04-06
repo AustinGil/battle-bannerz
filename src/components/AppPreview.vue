@@ -1,46 +1,13 @@
 <script setup>
 import { computed } from 'vue'
+import globalStore from '../store.js'
 
-const props = defineProps({
-  // Scene
-  width: Number,
-  height: Number,
-  location: String,
-  timeOfDay: String,
-  // Opponent
-  opponentName: {
-    type: String,
-    default: '',
-  },
-  opponentUrl: {
-    type: String,
-    default: '',
-  },
-  opponentHealth: {
-    type: Number,
-    default: 100,
-  },
-  // Trainer
-  trainerBox: {
-    type: String,
-    default: 'status',
-  },
-  trainerName: {
-    type: String,
-    default: '',
-  },
-  trainerHealth: {
-    type: Number,
-    default: 100,
-  },
-  trainerText: {
-    type: String,
-    default: 'A wild Pokémon appeared!',
-  },
-})
-
+const displaySize = computed(() => ({
+  width: Math.max(globalStore.width, 600),
+  height: Math.max(globalStore.height, 200)
+}))
 const urls = computed(() => {
-  const { location, timeOfDay } = props
+  const { location, timeOfDay } = globalStore
   return {
     bg: `/img/bg-${location}-${timeOfDay}.png`,
     mg: `/img/mg-${location}-${timeOfDay}.png`,
@@ -57,22 +24,22 @@ const getHealthBarColor = (value) => {
 <template>
   <div
     :style="{
-      width: `${props.width}px`,
-      height: `${props.height}px`,
+      width: `${displaySize.width}px`,
+      height: `${displaySize.height}px`,
     }"
     class="relative overflow-hidden"
   >
     <img :src="urls.bg" alt="A super intense battle between two well-matched adversaries" class="background absolute w-full h-full">
 
     <div class="status status--opponent absolute w-1/2 p-8 color-black bg-white">
-      {{ props.opponentName.toUpperCase() }}
+      {{ globalStore.opponentName.toUpperCase() }}
       <div class="health-bar health-bar--opponent flex align-center">
         <span class="color-yellow bg-black">HP: </span>
         <!-- <progress value="100" min="0" max="100"></progress> -->
         <div
           :style="{
-            '--health': `${props.opponentHealth}%`,
-            '--health-bar-color': getHealthBarColor(props.opponentHealth)
+            '--health': `${globalStore.opponentHealth}%`,
+            '--health-bar-color': getHealthBarColor(globalStore.opponentHealth)
           }"
           class="health-bar__bar"
         ></div>
@@ -80,27 +47,27 @@ const getHealthBarColor = (value) => {
     </div>
 
     <div class="opponent-wrapper grid justify-items-center absolute">
-      <img :src="props.opponentUrl" alt="" class="opponent">
+      <img :src="globalStore.opponentUrl" alt="" class="opponent">
       <img :src="urls.mg" alt="" class="midground">
     </div>
     <img :src="urls.fg" alt="" class="foreground absolute">
 
-    <div v-if="trainerBox === 'status'" class="status status--trainer absolute w-1/2 p-8 color-black bg-white">
-      {{ trainerName.toUpperCase() }}
+    <div v-if="globalStore.trainerBox === 'status'" class="status status--trainer absolute w-1/2 p-8 color-black bg-white">
+      {{ globalStore.trainerName.toUpperCase() }}
       <div class="health-bar health-bar--opponent flex align-center">
         <span class="color-yellow bg-black">HP: </span>
         <!-- <progress value="100" min="0" max="100"></progress> -->
         <div
           :style="{
-            '--health': `${props.trainerHealth}%`,
-            '--health-bar-color': getHealthBarColor(props.trainerHealth)
+            '--health': `${globalStore.trainerHealth}%`,
+            '--health-bar-color': getHealthBarColor(globalStore.trainerHealth)
           }"
           class="health-bar__bar"
         ></div>
       </div>
     </div>
     <div v-else class="dialog absolute w-1/2 color-black bg-white">
-      <p>{{ trainerText }}</p>
+      <p>{{ globalStore.trainerText }}</p>
     </div>
   </div>
 </template>

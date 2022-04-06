@@ -1,14 +1,14 @@
 import { createApp } from 'vue'
+import Vuetensils from 'vuetensils'
 import 'bedrocss'
 import '@fontsource/vt323'
 import './assets/styles/main.css'
-// import { VBtn, VForm, VInput } from 'vuetensils'
 import App from './App.vue'
 
 const app = createApp(App)
 
-// app.component('VBtn', VBtn)
-// app.component('VForm', VForm)
-// app.component('VInput', VInput)
+app.use(Vuetensils, {
+  components: ['VTabs', 'VForm', 'VInput', 'VBtn']
+})
 
 app.mount('#app')
