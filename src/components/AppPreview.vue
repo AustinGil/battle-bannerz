@@ -23,6 +23,7 @@ const getHealthBarColor = (value) => {
 
 <template>
   <div
+    id="preview"
     :style="{
       width: `${displaySize.width}px`,
       height: `${displaySize.height}px`,
@@ -74,7 +75,6 @@ const getHealthBarColor = (value) => {
 
 <style scoped>
 .background {
-  z-index: -1;
   object-fit: cover;
 }
 .status {

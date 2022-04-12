@@ -44,7 +44,7 @@ function onFileChange(event) {
 <template>
   <fieldset>
     <legend>Opponent</legend>
-    <VInput
+    <AppInput
       label="Pokemon"
       name="opponent-preset"
       type="select"
@@ -59,7 +59,7 @@ function onFileChange(event) {
       class="mbe-16"
     />
 
-    <VInput
+    <AppInput
       label="Sprite"
       name="sprite"
       type="file"
@@ -67,14 +67,14 @@ function onFileChange(event) {
       class="mbe-16"
     />
 
-    <VInput
+    <AppInput
       v-model="globalStore.opponentName"
       label="Name"
       name="opponentName"
       class="mbe-16"
     />
 
-    <VInput
+    <AppInput
       v-model="globalStore.opponentHealth"
       label="Health"
       name="opponentHealth"

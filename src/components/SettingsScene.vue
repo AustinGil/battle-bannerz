@@ -35,7 +35,7 @@ function selectPreset(event) {
   <fieldset class="mbe-16">
     <legend>Scene</legend>
 
-    <VInput
+    <AppInput
       label="Preset"
       name="preset"
       type="select"
@@ -44,7 +44,7 @@ function selectPreset(event) {
       class="mbe-16"
     />
 
-    <VInput
+    <AppInput
       v-model="globalStore.width"
       @change="updateData($event)"
       label="Width"
@@ -55,7 +55,7 @@ function selectPreset(event) {
       class="mbe-16"
     />
 
-    <VInput
+    <AppInput
       v-model="globalStore.height"
       @change="updateData($event)"
       label="Height"
@@ -66,7 +66,7 @@ function selectPreset(event) {
       class="mbe-16"
     />
     
-    <VInput
+    <AppInput
       v-model="globalStore.location"
       label="Location"
       name="location"
@@ -76,14 +76,13 @@ function selectPreset(event) {
       class="mbe-16"
     />
 
-    <VInput
+    <AppInput
       v-model="globalStore.timeOfDay"
       label="Time of Day"
       name="timeOfDay"
       type="select"
       :options="displayedTimes"
       @change="updateData($event)"
-      class="mbe-16"
     />
   </fieldset>
 </template>

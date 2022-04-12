@@ -17,12 +17,11 @@ watch(
 </script>
 
 <template>
-  <main class="h-full p-16">
+  <main class="app-main h-full p-16">
     <h1>Battle Bannerz</h1>
     <p class="mbe-16">A Pokémon battle scene generator for social media banners!</p>
-
-    <div class="flex gap-8 h-full">
-      <div class="w-1/4">
+    <div class="flex gap-8">
+      <div class="w-1/4 p-12 radius-16 bg-red">
         <SettingsForm />
       </div>
   
@@ -33,10 +32,15 @@ watch(
         </div>
       </div>
     </div>
+
+    <p>Made with ♥ by <a href="https://austingil.com">Austin Gil</a></p>
   </main>
 </template>
 
 <style>
+.app-main {
+  background: linear-gradient(var(--blue-500), var(--blue-800));
+}
 .avatar {
   width: 8rem;
   height: 8rem;

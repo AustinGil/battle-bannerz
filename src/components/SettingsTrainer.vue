@@ -5,24 +5,23 @@ import globalStore from '../store.js'
 <template>
   <fieldset>
     <legend>Trainer</legend>
-    <VInput
-      :value="globalStore.trainerBox"
+    <AppInput
+      v-model="globalStore.trainerBox"
       label="Box Type"
       name="trainerBox"
       type="radio"
       :options="[{ label: 'Status', value: 'status' }, { label: 'Text', value: 'text' }]"
-      @change="globalStore.trainerBox = $event.target.value"
       class="mbe-16"
     />
 
     <template v-if="globalStore.trainerBox === 'status'">
-      <VInput
+      <AppInput
         v-model="globalStore.trainerName"
         label="Name"
         name="trainerName"
         class="mbe-16"
       />
-      <VInput
+      <AppInput
         v-model="globalStore.trainerHealth"
         label="Health"
         name="trainerHealth"
@@ -32,7 +31,7 @@ import globalStore from '../store.js'
     </template>
 
     <template v-else>
-      <VInput
+      <AppInput
         v-model="globalStore.trainerText"
         label="Text"
         type="textarea"
