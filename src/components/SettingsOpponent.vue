@@ -1,6 +1,8 @@
 <script setup>
+// import { VFile } from 'vuetensils'
 import pokemonList from '../data/pokemonList.js'
 import globalStore from '../store.js'
+import VFile from './VFile.vue'
 
 function setOpponent(event) {
   const select = event.target
@@ -15,8 +17,7 @@ function setOpponent(event) {
     globalStore.trainerText = `A wild ${pokemon.name.toUpperCase()} appeared!`
   }
 }
-function onFileChange(event) {
-  const files = event.target.files;
+function onFileChange(files) {
   if (!files.length) {
     globalStore.opponentUrl = ''
     return;
@@ -39,6 +40,7 @@ function onFileChange(event) {
   };
   reader.readAsDataURL(file);
 }
+const log = console.log
 </script>
 
 <template>
@@ -59,12 +61,14 @@ function onFileChange(event) {
       class="mbe-16"
     />
 
-    <AppInput
+    <VFile
       label="Sprite"
       name="sprite"
-      type="file"
-      @change="onFileChange($event)"
-      class="mbe-16"
+      :classes="{
+        input: 'opponent-sprite',
+        dropzone: 'mbe-16 radius-4 p-16 color-black bg-white'
+      }"
+      @update="onFileChange($event)"
     />
 
     <AppInput
@@ -83,3 +87,31 @@ function onFileChange(event) {
     />
   </fieldset>
 </template>
+
+<style>
+/* .dropzone {
+  display: flex;
+  justify-content: center;
+  border: 2px solid var(--color-highlight);
+  padding: 1.5rem;
+}
+.opponent-sprite:focus + .dropzone {
+  outline: var(--outline-width,3px) solid transparent;
+  box-shadow: 0 0 0 var(--outline-width,3px) var(--accent-color,Highlight);
+} */
+
+
+.vts-file__dropzone {
+  display: flex;
+  justify-content: center;
+  border: 2px solid var(--color-highlight);
+  transition: 0.2s ease background-color;
+}
+.opponent-sprite:focus ~ .vts-file__dropzone {
+  outline: var(--outline-width,3px) solid transparent;
+  box-shadow: 0 0 0 var(--outline-width,3px) var(--accent-color,Highlight);
+} */
+.vts-file--droppable .vts-file__dropzone {
+  background: var(--color-highlight);
+}
+</style>

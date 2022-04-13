@@ -40,7 +40,6 @@ watch(
 <style>
 .app-main {
   background: linear-gradient(var(--blue-500), var(--blue-800));
-  /* background: white; */
 }
 .font-poke {
   font-family: 'Poke', sans-serif;

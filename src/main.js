@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import Vuetensils from 'vuetensils'
+import 'vuetensils/dist/style.css'
 import 'bedrocss'
 import '@fontsource/vt323'
 import './assets/styles/main.css'

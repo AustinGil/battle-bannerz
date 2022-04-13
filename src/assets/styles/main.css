@@ -69,6 +69,15 @@ button {
   color: var(--black);
   background: var(--color-highlight);
 }
+.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
 .grid {
   display: grid;
 }
@@ -125,6 +134,9 @@ button {
 }
 .radius-16 {
   border-radius: 1rem;
+}
+.p-4 {
+  padding: .25rem;
 }
 .p-8 {
   padding: .5rem;
