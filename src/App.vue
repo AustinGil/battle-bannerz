@@ -18,7 +18,7 @@ watch(
 
 <template>
   <main class="app-main h-full p-16">
-    <h1>Battle Bannerz</h1>
+    <h1 class="font-poke" data-content="Battle Bannerz">Battle Bannerz</h1>
     <p class="mbe-16">A Pokémon battle scene generator for social media banners!</p>
     <div class="flex gap-8">
       <div class="w-1/4 p-12 radius-16 bg-red">
@@ -40,6 +40,29 @@ watch(
 <style>
 .app-main {
   background: linear-gradient(var(--blue-500), var(--blue-800));
+  /* background: white; */
+}
+.font-poke {
+  font-family: 'Poke', sans-serif;
+  color: var(--yellow-700);
+  text-shadow:
+    0 -3px var(--blue-default),
+    3px 0 var(--blue-default),
+    0 3px var(--blue-default),
+    -3px 0 var(--blue-default),
+    3px 3px var(--blue-default),
+    -3px 3px var(--blue-default),
+    3px -3px var(--blue-default),
+    -3px -3px var(--blue-default),
+    -5px 4px var(--blue-800);
+  position: relative;
+}
+.font-poke:after {
+  content: attr(data-content);
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  text-shadow: -1px 1px var(--yellow-default);
 }
 .avatar {
   width: 8rem;
