@@ -39,7 +39,17 @@ watch(
 
 <style>
 .app-main {
-  background: linear-gradient(var(--blue-500), var(--blue-800));
+  background: #248DD3;
+  background: -moz-linear-gradient(top, #248DD3 0%, #2CABFF 53%, #0DB1C9 100%);
+  background: -webkit-linear-gradient(top, #248DD3 0%, #2CABFF 53%, #0DB1C9 100%);
+  background: linear-gradient(to bottom, #248DD3 0%, #2CABFF 53%, #0DB1C9 100%);
+  /* background: white; */
+}
+body {
+  background: #0DB1C9;
+  background: -moz-linear-gradient(top, #0DB1C9 0%, #2CABFF 53%, #248DD3 100%);
+  background: -webkit-linear-gradient(top, #0DB1C9 0%, #2CABFF 53%, #248DD3 100%);
+  background: linear-gradient(to bottom, #0DB1C9 0%, #2CABFF 53%, #248DD3 100%);
   /* background: white; */
 }
 .font-poke {
