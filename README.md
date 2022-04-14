@@ -9,3 +9,13 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 Sound effects:
 - https://www.soundjay.com/index.html 
 - https://www.myinstants.com/search/?page=1&name=Pokemon
+
+### How to run
+To run this, you will need to install Node.js version 16.14.2 (Recommended). 
+Once Node.js is installed, run these commands in the root directory of the download.
+```js
+npm install
+```
+```js
+npm run dev
+```
