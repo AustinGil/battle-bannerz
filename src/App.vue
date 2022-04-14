@@ -18,8 +18,8 @@ watch(
 
 <template>
   <main class="app-main h-full p-16">
-    <h1 class="font-poke" data-content="Battle Bannerz">Battle Bannerz</h1>
-    <p class="mbe-16">A Pokémon battle scene generator for social media banners!</p>
+    <h1 class="font-poke" data-content="Battle Banners" id="font">Battle Banners</h1>
+    <p class="mbe-16 font-poke" data-content="A Pokémon battle scene generator for social media banners!">A Pokémon battle scene generator for social media banners!</p>
     <div class="flex gap-8">
       <div class="w-1/4 p-12 radius-16 bg-red">
         <SettingsForm />
@@ -33,13 +33,14 @@ watch(
       </div>
     </div>
 
-    <p>Made with ♥ by <a href="https://austingil.com">Austin Gil</a></p>
+    <a href="https://austingil.com"><p class="font-poke" data-content="Made with ♥ by Austin Gil">Made with ♥ by Austin Gil</p></a>
   </main>
 </template>
 
 <style>
 .app-main {
   background: linear-gradient(var(--blue-500), var(--blue-800));
+  /* background: white; */
 }
 .font-poke {
   font-family: 'Poke', sans-serif;
