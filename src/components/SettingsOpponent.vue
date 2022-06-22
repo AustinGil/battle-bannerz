@@ -8,9 +8,7 @@ function setOpponent(event) {
   const select = event.target
   const pokemonNum = Number(select.value)
   const pokemon = pokemonList[pokemonNum - 1]
-  const audioEl = new Audio()
-  audioEl.src = `/audio/cries/${pokemon.num}.ogg`
-  audioEl.play()
+  new Audio(`/audio/cries/${pokemon.num}.ogg`).play()
   globalStore.opponentName = pokemon.name
   globalStore.opponentUrl = `/img/pokemon/${pokemon.num}.png`
   if (!globalStore.customText) {
@@ -31,16 +29,15 @@ function onFileChange(files) {
     globalStore.opponentUrl = event.target.result;
     globalStore.opponentName = name
     const randomPokeNum = Math.floor(Math.random() * pokemonList.length) + 1
-    const audioEl = new Audio()
-    audioEl.src = `/audio/cries/${randomPokeNum}.ogg`
-    audioEl.play()
+
+    new Audio(`/audio/cries/${randomPokeNum}.ogg`).play()
+    
     if (!globalStore.customText) {
       globalStore.trainerText = `A wild ${name.toUpperCase()} appeared!`
     }
   };
   reader.readAsDataURL(file);
 }
-const log = console.log
 </script>
 
 <template>

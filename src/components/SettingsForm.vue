@@ -5,8 +5,7 @@ import SettingsScene from './SettingsScene.vue'
 import SettingsOpponent from './SettingsOpponent.vue'
 import SettingsTrainer from './SettingsTrainer.vue';
 
-const pokeCenter = new Audio()
-pokeCenter.src = '/audio/pokecenter.mp3'
+const pokeCenter = new Audio('/audio/pokecenter.mp3')
 function handleSubmit(event) {
   pokeCenter.play()
   event.preventDefault()

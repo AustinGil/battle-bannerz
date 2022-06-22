@@ -42,26 +42,26 @@ watch(
   background: linear-gradient(var(--blue-500), var(--blue-800));
 }
 .font-poke {
-  font-family: 'Poke', sans-serif;
-  color: var(--yellow-700);
-  text-shadow:
-    0 -3px var(--blue-default),
-    3px 0 var(--blue-default),
-    0 3px var(--blue-default),
-    -3px 0 var(--blue-default),
-    3px 3px var(--blue-default),
-    -3px 3px var(--blue-default),
-    3px -3px var(--blue-default),
-    -3px -3px var(--blue-default),
-    -5px 4px var(--blue-800);
   position: relative;
+  font-family: 'Poke', sans-serif;
+  -webkit-text-stroke: 7px var(--blue-800);
 }
+.font-poke:before,
 .font-poke:after {
   content: attr(data-content);
   position: absolute;
-  inset: 0;
-  color: transparent;
-  text-shadow: -1px 1px var(--yellow-default);
+}
+.font-poke:before {
+  left: 2px;
+  bottom: 2px;
+  -webkit-text-stroke: 7px var(--blue-default);
+}
+.font-poke:after {
+  left: 0;
+  transform: translate(1px, -1px);
+  color: var(--yellow-default);
+  text-shadow: 2px -2px var(--yellow-800);
+  -webkit-text-stroke: 0;
 }
 .avatar {
   width: 8rem;
