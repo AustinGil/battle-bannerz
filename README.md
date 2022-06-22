@@ -9,3 +9,5 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 Sound effects:
 - https://www.soundjay.com/index.html 
 - https://www.myinstants.com/search/?page=1&name=Pokemon
+
+SCP example: `scp -r ./dist/ root@IP:/var/www/html/folder`
