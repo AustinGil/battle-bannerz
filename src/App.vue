@@ -33,7 +33,7 @@ watch(
       </div>
     </div>
 
-    <p>Made with ♥ by <a href="https://austingil.com">Austin Gil</a></p>
+    <p>Made with ♥ by <a href="https://austingil.com">Austin Gil</a> :)</p>
   </main>
 </template>
 
